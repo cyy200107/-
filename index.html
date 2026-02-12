@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>只为你准备的幸运转盘 💕</title>
+<title>专属幸运转盘 💕</title>
 
 <style>
 body{
@@ -15,22 +15,50 @@ body{
 }
 
 h1{
-    margin-top:40px;
+    margin-top:30px;
 }
 
 #wheel{
-    margin:40px auto;
-    width:300px;
-    height:300px;
+    margin:30px auto;
+    width:320px;
+    height:320px;
     border-radius:50%;
     border:10px solid #fff;
+    position:relative;
     transition:transform 4s cubic-bezier(0.33,1,0.68,1);
     background:conic-gradient(
-        #ff6b6b 0deg 90deg,
-        #feca57 90deg 180deg,
-        #ff9ff3 180deg 270deg,
-        #48dbfb 270deg 360deg
+        #ff6b6b 0deg 36deg,
+        #feca57 36deg 72deg,
+        #48dbfb 72deg 108deg,
+        #ff9ff3 108deg 144deg,
+        #ff6b6b 144deg 180deg,
+        #feca57 180deg 216deg,
+        #48dbfb 216deg 252deg,
+        #ff9ff3 252deg 288deg,
+        #ff6b6b 288deg 324deg,
+        #1dd1a1 324deg 360deg
     );
+}
+
+.segment{
+    position:absolute;
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    font-size:14px;
+    font-weight:bold;
+    transform-origin:center center;
+}
+
+.arrow{
+    width:0;
+    height:0;
+    border-left:15px solid transparent;
+    border-right:15px solid transparent;
+    border-bottom:30px solid #fff;
+    margin:0 auto;
 }
 
 button{
@@ -50,16 +78,6 @@ button{
     font-weight:bold;
 }
 
-.arrow{
-    width:0;
-    height:0;
-    border-left:15px solid transparent;
-    border-right:15px solid transparent;
-    border-bottom:30px solid #fff;
-    margin:0 auto;
-}
-
-/* 弹窗 */
 #popup{
     display:none;
     position:fixed;
@@ -81,10 +99,6 @@ button{
     width:300px;
 }
 
-.popup-box h2{
-    margin-bottom:20px;
-}
-
 .yes-btn{
     background:#ff6b6b;
     color:#fff;
@@ -95,7 +109,7 @@ button{
 
 <body>
 
-<h1>为你准备的幸运转盘 💕</h1>
+<h1>幸运转盘 💕</h1>
 
 <div class="arrow"></div>
 <div id="wheel"></div>
@@ -104,12 +118,10 @@ button{
 
 <div id="result"></div>
 
-<!-- 音乐 -->
 <audio id="bgm" loop>
   <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5a6fa2e1f3.mp3?filename=romantic-background-112199.mp3" type="audio/mp3">
 </audio>
 
-<!-- 弹窗 -->
 <div id="popup">
   <div class="popup-box">
     <h2>你愿意做我的女朋友吗？💖</h2>
@@ -118,20 +130,39 @@ button{
 </div>
 
 <script>
+const prizes = [
+"没中奖","没中奖","没中奖",
+"没中奖","没中奖","没中奖",
+"📸 拍立得",
+"🐶 线条小狗",
+"🌹 鲜花",
+"💖 获得所有礼品"
+];
+
+// 创建文字
+const wheel = document.getElementById("wheel");
+prizes.forEach((text,i)=>{
+    const div = document.createElement("div");
+    div.className="segment";
+    div.style.transform="rotate("+(i*36)+"deg) translateY(-130px)";
+    div.innerHTML=text;
+    wheel.appendChild(div);
+});
+
 function spin(){
-    const wheel = document.getElementById("wheel");
     const result = document.getElementById("result");
     const music = document.getElementById("bgm");
 
     music.play();
 
-    let deg = 3600 + Math.floor(Math.random()*360);
+    // 强制落在最后一个（获得所有礼品）
+    let deg = 3600 + 324; 
     wheel.style.transform = "rotate(" + deg + "deg)";
 
     setTimeout(()=>{
         result.innerHTML = `
-        🎉 恭喜你抽中了：<br><br>
-        📸 拍立得 + 🐶 线条小狗玩具 + 🌹 鲜花 + 💖 我的心
+        🎉 恭喜你获得：<br><br>
+        📸 拍立得 + 🐶 线条小狗 + 🌹 鲜花 + 💖 我的心
         <br><br>
         <button onclick="showPopup()">点击领取</button>
         `;
