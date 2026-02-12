@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>专属幸运转盘 💖</title>
+<title>幸运转盘 💖</title>
 
 <style>
   :root{
@@ -30,7 +30,7 @@
       linear-gradient(135deg,#ff9a9e,#fad0c4);
   }
 
-  /* 背景流光 blob */
+  /* 背景流光 */
   .blob{
     position:fixed; pointer-events:none;
     width:520px; height:520px; border-radius:50%;
@@ -46,22 +46,20 @@
     50%{ transform: translate(70px, 40px) scale(1.06); }
   }
 
-  /* 顶部标题 */
   h1{
-    margin:24px 12px 8px;
+    margin:22px 12px 8px;
     font-size:26px;
     letter-spacing:.6px;
     text-shadow:0 14px 40px rgba(0,0,0,.25);
   }
   .sub{
-    margin:0 16px 18px;
+    margin:0 16px 16px;
     font-size:14px;
     line-height:1.7;
     color:rgba(255,255,255,.9);
     text-shadow:0 10px 28px rgba(0,0,0,.14);
   }
 
-  /* 卡片容器 */
   .card{
     width:min(560px, 92vw);
     margin:0 auto;
@@ -73,41 +71,12 @@
     padding:18px 14px 16px;
   }
 
-  /* 开始界面 */
-  .startArea{
-    display:flex; flex-direction:column; gap:12px;
-    align-items:center; justify-content:center;
-    padding:10px 8px 16px;
-  }
-  .bigBtn{
-    border:none;
-    border-radius:999px;
-    padding:14px 40px;
-    font-weight:1000;
-    font-size:18px;
-    cursor:pointer;
-    color:#fff;
-    background: linear-gradient(90deg, var(--hot), var(--pink));
-    box-shadow:0 18px 46px rgba(255,61,154,.35);
-    transition: transform .12s ease, filter .2s ease;
-  }
-  .bigBtn:active{ transform: translateY(1px) scale(.99); }
-  .tip{
-    font-size:13px;
-    color:rgba(255,255,255,.86);
-  }
-
-  /* 转盘区域 */
-  .gameArea{
-    display:none;
-    padding:6px 8px 14px;
-  }
   .wrap{
     display:flex;
     flex-direction:column;
     align-items:center;
     gap:14px;
-    padding-top:8px;
+    padding-top:6px;
   }
 
   /* 指针 */
@@ -166,7 +135,7 @@
     );
   }
 
-  /* 分割线（从12点方向开始） */
+  /* 分割线 */
   .divider{
     position:absolute; inset:0;
     border-radius:50%;
@@ -180,7 +149,7 @@
     opacity:.85;
   }
 
-  /* 标签 */
+  /* 标签层 */
   #labels{
     position:absolute; inset:0;
     border-radius:50%;
@@ -226,7 +195,7 @@
     50%{ transform: scale(1.06); filter: brightness(1.08); }
   }
 
-  /* 控制按钮 */
+  /* 按钮 */
   .btnRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
   .btn{
     border:none; cursor:pointer;
@@ -259,6 +228,12 @@
     font-size:18px;
     font-weight:1000;
     margin-bottom:4px;
+  }
+  .shake{ animation: shake .22s ease-in-out 2; }
+  @keyframes shake{
+    0%,100%{ transform: translateX(0); }
+    25%{ transform: translateX(-3px); }
+    75%{ transform: translateX(3px); }
   }
 
   /* 弹窗 */
@@ -306,7 +281,7 @@
   }
   .chooseArea{
     position:relative;
-    height:130px;
+    height:140px;
     border-radius:16px;
     background: rgba(255,255,255,.58);
     border:1px dashed rgba(255,61,154,.35);
@@ -324,12 +299,12 @@
     user-select:none;
   }
   .yesBtn{
-    left:18px; top:44px;
+    left:18px; top:52px;
     background: linear-gradient(90deg, var(--hot), var(--pink));
     color:#fff;
   }
   .noBtn{
-    left:218px; top:46px;
+    left:218px; top:54px;
     background: rgba(17,24,39,.10);
     color:#111827;
     transition: left .16s ease, top .16s ease, transform .16s ease;
@@ -347,7 +322,7 @@
     z-index:5;
   }
 
-  /* 爱心漂浮 */
+  /* 爱心雨 */
   .heart{
     position:fixed;
     top:-12px;
@@ -359,18 +334,8 @@
   }
   @keyframes fall{ to{ transform: translateY(110vh); opacity:0; } }
 
-  /* 轻微抖动 */
-  .shake{ animation: shake .22s ease-in-out 2; }
-  @keyframes shake{
-    0%,100%{ transform: translateX(0); }
-    25%{ transform: translateX(-3px); }
-    75%{ transform: translateX(3px); }
-  }
-
-  /* Canvas 特效层 */
   canvas{ position:fixed; inset:0; pointer-events:none; z-index:80; }
 
-  /* 小屏适配 */
   @media (max-width:390px){
     :root{ --wheelSize: 320px; }
   }
@@ -383,40 +348,31 @@
   <div class="blob b3"></div>
   <canvas id="fx"></canvas>
 
-  <h1>专属幸运转盘 💖</h1>
-  <div class="sub">点一下开始，就把所有礼物（和一点点心动）都给你。</div>
+  <h1>幸运转盘 💖</h1>
+  <div class="sub">点一下开始转，看今天的运气落在哪一格。</div>
 
   <div class="card">
-    <!-- 开始界面 -->
-    <div class="startArea" id="startArea">
-      <button class="bigBtn" id="startBtn">开始</button>
-      <div class="tip">（点“开始”会播放暧昧BGM 🎵）</div>
-    </div>
+    <div class="wrap">
+      <div class="pointer" aria-hidden="true"></div>
 
-    <!-- 游戏界面 -->
-    <div class="gameArea" id="gameArea">
-      <div class="wrap">
-        <div class="pointer" aria-hidden="true"></div>
-
-        <div class="wheelShell">
-          <div id="wheel">
-            <div id="labels"></div>
-          </div>
-          <div class="divider"></div>
-          <div class="hub"><div class="pulse">LOVE</div></div>
+      <div class="wheelShell">
+        <div id="wheel">
+          <div id="labels"></div>
         </div>
-
-        <div class="btnRow">
-          <button class="btn" id="spinBtn">开始抽奖</button>
-          <button class="btn" id="musicBtn">音乐：开</button>
-        </div>
-
-        <div id="result">点击「开始抽奖」～ 你的好运正在排队。</div>
+        <div class="divider"></div>
+        <div class="hub"><div class="pulse">LOVE</div></div>
       </div>
+
+      <div class="btnRow">
+        <button class="btn" id="spinBtn">开始转</button>
+        <button class="btn" id="musicBtn">音乐：开</button>
+      </div>
+
+      <div id="result">准备好了吗？点「开始转」就开始。</div>
     </div>
   </div>
 
-  <!-- 暧昧浪漫 BGM（可换成你自己的链接） -->
+  <!-- 暧昧浪漫 BGM（点开始转才会播放） -->
   <audio id="bgm" loop>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5a6fa2e1f3.mp3?filename=romantic-background-112199.mp3" type="audio/mp3">
   </audio>
@@ -427,7 +383,7 @@
       <button class="closeX" id="closeX">×</button>
       <div class="popupInner" id="popupInner">
         <h2>你愿意做我的女朋友吗？💖</h2>
-        <div class="popupHint">提示：不愿意会逃跑（它也知道答案😏）</div>
+        <div class="popupHint">（别紧张，认真选一下）</div>
 
         <div class="chooseArea" id="chooseArea">
           <button class="yesBtn" id="yesBtn">愿意 💕</button>
@@ -435,48 +391,40 @@
         </div>
 
         <div style="margin-top:12px;color:#111827;font-weight:900;font-size:13px;line-height:1.6;">
-          你点「愿意」，我就把所有礼物都给你（连同我自己）。
+          选完就可以领取你的礼物啦。
         </div>
       </div>
     </div>
   </div>
 
 <script>
-/* =========================
-   0) DOM
-========================= */
-const startArea = document.getElementById("startArea");
-const gameArea  = document.getElementById("gameArea");
-const startBtn  = document.getElementById("startBtn");
+/* ========== DOM ========== */
+const wheel = document.getElementById("wheel");
+const labels = document.getElementById("labels");
+const spinBtn = document.getElementById("spinBtn");
+const result = document.getElementById("result");
 
-const wheel     = document.getElementById("wheel");
-const labels    = document.getElementById("labels");
-const spinBtn   = document.getElementById("spinBtn");
-const result    = document.getElementById("result");
+const popup = document.getElementById("popup");
+const closeX = document.getElementById("closeX");
+const popupInner = document.getElementById("popupInner");
+const chooseArea = document.getElementById("chooseArea");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
 
-const popup     = document.getElementById("popup");
-const closeX    = document.getElementById("closeX");
-const popupInner= document.getElementById("popupInner");
-const chooseArea= document.getElementById("chooseArea");
-const yesBtn    = document.getElementById("yesBtn");
-const noBtn     = document.getElementById("noBtn");
+const bgm = document.getElementById("bgm");
+const musicBtn = document.getElementById("musicBtn");
 
-const bgm       = document.getElementById("bgm");
-const musicBtn  = document.getElementById("musicBtn");
-
-/* =========================
-   1) 转盘配置
-========================= */
+/* ========== 转盘数据（不露馅：不写必中提示） ========== */
 const prizes = [
   "没中奖","没中奖","没中奖","没中奖","没中奖","没中奖",
   "📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"
 ];
 const N = prizes.length;     // 10
 const STEP = 360 / N;        // 36°
-const POINTER_AT = -90;      // 指针方向（12点）
-const WIN_INDEX = 9;         // 永远中“获得所有礼品”
+const POINTER_AT = -90;      // 12点方向
+const WIN_INDEX = 9;         // 实际永远命中最后一格（不展示逻辑）
 
-/* 生成标签：扇区中心角 + 旋回正向 */
+/* 生成扇区文字 */
 const r = 128;
 prizes.forEach((text,i)=>{
   const centerAngle = POINTER_AT + i*STEP + STEP/2;
@@ -489,19 +437,16 @@ prizes.forEach((text,i)=>{
   labels.appendChild(el);
 });
 
-/* 计算让 index 扇区中心对齐指针的旋转角 */
+/* 计算旋转角（最终落在 WIN_INDEX 中心） */
 function computeRotationToLandOn(index){
   const winCenter = POINTER_AT + index*STEP + STEP/2;
-  const baseRotation = POINTER_AT - winCenter; // 满足 center + rot == POINTER_AT
-  const spins = 9; // 多转几圈
+  const baseRotation = POINTER_AT - winCenter;
+  const spins = 9;
   return spins*360 + baseRotation;
 }
 
-/* =========================
-   2) 音乐
-========================= */
+/* ========== 音乐 ========== */
 let musicOn = true;
-
 async function playMusic(){
   if(!musicOn) return;
   try{ await bgm.play(); }catch(e){}
@@ -518,27 +463,18 @@ function toggleMusic(){
 }
 musicBtn.addEventListener("click", toggleMusic);
 
-/* =========================
-   3) 开始：显示转盘 + 播放BGM
-========================= */
-startBtn.addEventListener("click", async ()=>{
-  startArea.style.display="none";
-  gameArea.style.display="block";
-  await playMusic();
-  heartsBurst(16);
-});
-
-/* =========================
-   4) 抽奖（必中特等奖）
-========================= */
+/* ========== 抽奖：看起来随机但不露馅 ========== */
 spinBtn.addEventListener("click", async ()=>{
   spinBtn.disabled = true;
   await playMusic();
 
+  // 先“随机预告”，制造悬念（不影响最终结果）
+  const fakePool = ["没中奖","📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"];
+  const preview = fakePool[Math.floor(Math.random()*fakePool.length)];
   result.classList.remove("shake");
-  result.innerHTML = "转盘启动中…💞 你的好运正在加载中…";
+  result.innerHTML = `转盘启动中…💞 可能会抽到：<b>${preview}</b>`;
 
-  // 轻微扰动但仍落在同一格（小幅度）
+  // 小抖动让视觉更像随机，但仍落在同一格范围
   const wiggle = (Math.random()*8 - 4);
   const rotation = computeRotationToLandOn(WIN_INDEX) + wiggle;
   wheel.style.transform = `rotate(${rotation}deg)`;
@@ -553,45 +489,200 @@ spinBtn.addEventListener("click", async ()=>{
     confettiBurst();
     heartsBurst(40);
 
-    document.getElementById("claimBtn").addEventListener("click", ()=>{
-      showPopup();
-    });
-
+    document.getElementById("claimBtn").addEventListener("click", showPopup);
     spinBtn.disabled = false;
   }, 4900);
 });
 
-/* =========================
-   5) 弹窗 + 不愿意逃跑
-========================= */
+/* ========== 弹窗 ========== */
 function showPopup(){
   popup.style.display="flex";
   playMusic();
+  resetChoiceUI();
   moveNoBtn(true);
 }
-function hidePopup(){
-  popup.style.display="none";
-}
+function hidePopup(){ popup.style.display="none"; }
 closeX.addEventListener("click", hidePopup);
 popup.addEventListener("click", (e)=>{ if(e.target===popup) hidePopup(); });
+
+/* 重新渲染选择 UI（用于“不愿意 => 再选一次”回到原界面） */
+function resetChoiceUI(){
+  popupInner.innerHTML = `
+    <h2>你愿意做我的女朋友吗？💖</h2>
+    <div class="popupHint">（别紧张，认真选一下）</div>
+    <div class="chooseArea" id="chooseAreaInner">
+      <button class="yesBtn" id="yesBtnInner">愿意 💕</button>
+      <button class="noBtn" id="noBtnInner">不愿意 🙈</button>
+    </div>
+    <div style="margin-top:12px;color:#111827;font-weight:900;font-size:13px;line-height:1.6;">
+      选完就可以领取你的礼物啦。
+    </div>
+  `;
+
+  const yes = document.getElementById("yesBtnInner");
+  const no  = document.getElementById("noBtnInner");
+  const area= document.getElementById("chooseAreaInner");
+
+  // 愿意：成功结局
+  yes.addEventListener("click", ()=>{
+    popupInner.innerHTML = `
+      <h2>从今天开始，你就是我的女朋友了 💕</h2>
+      <div style="margin-top:10px;color:#111827;font-weight:1000;line-height:1.7;">
+        以后每一个节日、每一次开心、每一次委屈，<br>
+        我都想以男朋友的身份陪在你身边。
+      </div>
+      <div style="margin-top:14px;color:#7c3aed;font-weight:900;">
+        （礼物我都准备好了😏）
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn" id="okBtn">我知道啦 🥰</button>
+      </div>
+    `;
+    document.getElementById("okBtn").addEventListener("click", hidePopup);
+    confettiBurst();
+    heartsBurst(90);
+  });
+
+  // 不愿意：如果真的点到了 -> “再选一次” -> 回到选择界面
+  no.addEventListener("click", ()=>{
+    popupInner.innerHTML = `
+      <h2>再选一次 😏</h2>
+      <div class="popupHint">你是不是点错了？</div>
+      <div style="margin-top:10px;color:#111827;font-weight:1000;">
+        没关系，重新来～
+      </div>
+      <div style="margin-top:14px;">
+        <button class="btn" id="againBtn">重新选择</button>
+      </div>
+    `;
+    document.getElementById("againBtn").addEventListener("click", ()=>{
+      resetChoiceUI();
+      // 重新拿到新的 no/area，再让它继续逃跑
+      const newNo = document.getElementById("noBtnInner");
+      const newArea= document.getElementById("chooseAreaInner");
+      attachEscape(newNo, newArea);
+      moveNoBtn(true);
+    });
+  });
+
+  // 绑定逃跑逻辑
+  attachEscape(no, area);
+}
 
 function rand(min,max){ return min + Math.random()*(max-min); }
 
 function moveNoBtn(isFirst=false){
-  const pad = 10;
-  const areaW = chooseArea.clientWidth;
-  const areaH = chooseArea.clientHeight;
+  const no = document.getElementById("noBtnInner");
+  const area = document.getElementById("chooseAreaInner");
+  if(!no || !area) return;
 
-  const btnW = noBtn.offsetWidth || 96;
-  const btnH = noBtn.offsetHeight || 42;
+  const pad = 10;
+  const areaW = area.clientWidth;
+  const areaH = area.clientHeight;
+  const btnW = no.offsetWidth || 96;
+  const btnH = no.offsetHeight || 42;
 
   let x, y, tries=0;
   do{
     x = rand(pad, areaW - btnW - pad);
     y = rand(pad, areaH - btnH - pad);
     tries++;
-  }while(tries<12 && x < 150 && y > 25 && y < 105); // 避开“愿意”按钮附近
+  }while(tries<12 && x < 150 && y > 30 && y < 115);
 
-  noBtn.style.left = x + "px";
-  noBtn.style.top  = y + "px";
-  noBtn.style.transform = isFirst ? "scale(1)" : `scale(${rand(.92,
+  no.style.left = x + "px";
+  no.style.top  = y + "px";
+  no.style.transform = isFirst ? "scale(1)" : `scale(${rand(.92,1.06).toFixed(2)})`;
+}
+
+/* 逃跑绑定：靠近就跑 + 触摸就跑 + 靠近范围也跑 */
+function attachEscape(no, area){
+  const run = ()=>moveNoBtn(false);
+
+  no.addEventListener("mouseenter", run);
+  no.addEventListener("touchstart", (e)=>{ e.preventDefault(); run(); }, {passive:false});
+
+  area.addEventListener("mousemove", (e)=>{
+    const rect = no.getBoundingClientRect();
+    const dx = e.clientX - (rect.left + rect.width/2);
+    const dy = e.clientY - (rect.top  + rect.height/2);
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist < 90) run();
+  });
+}
+
+/* ========== Canvas 彩带 ========== */
+const canvas = document.getElementById("fx");
+const ctx = canvas.getContext("2d");
+let W=0,H=0,parts=[],raf=null;
+
+function resize(){
+  W = canvas.width = innerWidth;
+  H = canvas.height = innerHeight;
+}
+addEventListener("resize", resize);
+resize();
+
+function confettiBurst(){
+  parts = [];
+  for(let i=0;i<190;i++){
+    parts.push({
+      x: Math.random()*W,
+      y: -30 - Math.random()*H*0.15,
+      vx: -3 + Math.random()*6,
+      vy: 3 + Math.random()*8,
+      r: 3 + Math.random()*6,
+      rot: Math.random()*Math.PI,
+      vr: -0.25 + Math.random()*0.5,
+      life: 140 + Math.random()*70
+    });
+  }
+  if(raf) cancelAnimationFrame(raf);
+  tick();
+}
+function tick(){
+  ctx.clearRect(0,0,W,H);
+  for(const p of parts){
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy *= 1.01;
+    p.rot += p.vr;
+    p.life -= 1;
+
+    const a = Math.max(0, Math.min(1, p.life/190));
+    ctx.save();
+    ctx.translate(p.x,p.y);
+    ctx.rotate(p.rot);
+    ctx.globalAlpha = a;
+
+    const g = ctx.createLinearGradient(-p.r,-p.r,p.r,p.r);
+    g.addColorStop(0, "rgba(255,61,154,0.95)");
+    g.addColorStop(0.5,"rgba(96,165,250,0.95)");
+    g.addColorStop(1, "rgba(34,197,94,0.95)");
+    ctx.fillStyle = g;
+    ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);
+
+    ctx.restore();
+  }
+  parts = parts.filter(p=>p.life>0 && p.y < H+60);
+  if(parts.length) raf = requestAnimationFrame(tick);
+  else ctx.clearRect(0,0,W,H);
+}
+
+/* ========== 爱心雨 ========== */
+function heartsBurst(count=60){
+  for(let i=0;i<count;i++){
+    const h = document.createElement("div");
+    h.className="heart";
+    h.textContent = ["💖","💘","💗","💞","💓"][Math.floor(Math.random()*5)];
+    h.style.left = (Math.random()*100) + "vw";
+    h.style.animationDuration = (3 + Math.random()*3) + "s";
+    h.style.fontSize = (16 + Math.random()*14) + "px";
+    h.style.opacity = (0.65 + Math.random()*0.35).toFixed(2);
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(), 6500);
+  }
+}
+setInterval(()=>{ if(Math.random()<0.35) heartsBurst(4); }, 900);
+</script>
+</body>
+</html>
