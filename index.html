@@ -1,151 +1,99 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>100%中奖抽奖</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>只为你准备的抽奖 🎁</title>
 
 <style>
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-  background:linear-gradient(135deg,#1e293b,#0f172a);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:100vh;
-}
-
-.card{
-  width:420px;
-  background:#111827;
-  padding:30px;
-  border-radius:20px;
-  text-align:center;
-  box-shadow:0 20px 50px #00000088;
+    margin:0;
+    background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC";
+    text-align:center;
+    color:#fff;
 }
 
 h1{
-  margin:0 0 10px 0;
+    margin-top:40px;
+    font-size:28px;
 }
 
-.badge{
-  display:inline-block;
-  background:linear-gradient(90deg,#22c55e,#a3e635);
-  color:#052e16;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:bold;
-  margin-bottom:15px;
-}
-
-.prizes{
-  text-align:left;
-  margin:15px 0;
-  font-size:14px;
-  color:#cbd5e1;
+#wheel{
+    margin:40px auto;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    border:10px solid #fff;
+    position:relative;
+    transition:transform 4s cubic-bezier(0.33,1,0.68,1);
+    background:conic-gradient(
+        #ff6b6b 0deg 90deg,
+        #feca57 90deg 180deg,
+        #48dbfb 180deg 270deg,
+        #1dd1a1 270deg 360deg
+    );
 }
 
 button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  font-weight:bold;
-  cursor:pointer;
-  background:linear-gradient(90deg,#22c55e,#a3e635);
-  color:#052e16;
-  font-size:15px;
-  margin-top:10px;
+    padding:15px 40px;
+    font-size:18px;
+    border:none;
+    border-radius:30px;
+    background:#fff;
+    color:#ff6b6b;
+    cursor:pointer;
+    margin-top:20px;
 }
 
-.result{
-  margin-top:20px;
-  padding:18px;
-  border-radius:16px;
-  background:linear-gradient(135deg,#fbbf24,#fb7185);
-  color:#111;
-  font-weight:bold;
-  display:none;
+#result{
+    margin-top:30px;
+    font-size:22px;
+    font-weight:bold;
 }
 
-canvas{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
+.arrow{
+    width:0;
+    height:0;
+    border-left:15px solid transparent;
+    border-right:15px solid transparent;
+    border-bottom:30px solid #fff;
+    margin:0 auto;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="fx"></canvas>
+<h1>为你准备的幸运转盘 💕</h1>
 
-<div class="card">
-  <h1>🎁 抽奖活动</h1>
-  <div class="badge">中奖率 100%</div>
+<div class="arrow"></div>
+<div id="wheel"></div>
 
-  <div class="prizes">
-    📸 拍立得<br>
-    🐶 线条小狗玩具<br>
-    💐 鲜花<br>
-    🏆 全部都中了
-  </div>
+<button onclick="spin()">开始抽奖</button>
 
-  <button onclick="draw()">立即抽奖</button>
+<div id="result"></div>
 
-  <div class="result" id="resultBox">
-    🎉 恭喜你！<br><br>
-    🏆 你抽中了：<br><br>
-    📸 拍立得 + 🐶 线条小狗玩具 + 💐 鲜花
-  </div>
-</div>
+<!-- 音乐（暧昧风格轻音乐，可替换链接） -->
+<audio id="bgm" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5a6fa2e1f3.mp3?filename=romantic-background-112199.mp3" type="audio/mp3">
+</audio>
 
 <script>
-function draw(){
-  document.getElementById("resultBox").style.display="block";
-  confetti();
-}
+function spin(){
+    const wheel = document.getElementById("wheel");
+    const result = document.getElementById("result");
+    const music = document.getElementById("bgm");
 
-// 简单彩带动画
-const canvas=document.getElementById("fx");
-const ctx=canvas.getContext("2d");
-let W,H,parts=[];
-function resize(){
-  W=canvas.width=innerWidth;
-  H=canvas.height=innerHeight;
-}
-resize();
-addEventListener("resize",resize);
+    music.play();
 
-function confetti(){
-  parts=[];
-  for(let i=0;i<120;i++){
-    parts.push({
-      x:Math.random()*W,
-      y:-20,
-      vx:-2+Math.random()*4,
-      vy:3+Math.random()*6,
-      r:3+Math.random()*4,
-      life:100+Math.random()*50
-    });
-  }
-  requestAnimationFrame(tick);
-}
+    // 随机旋转
+    let deg = Math.floor(3600 + Math.random()*360);
+    wheel.style.transform = "rotate(" + deg + "deg)";
 
-function tick(){
-  ctx.clearRect(0,0,W,H);
-  parts.forEach(p=>{
-    p.x+=p.vx;
-    p.y+=p.vy;
-    p.life--;
-    ctx.fillStyle="hsl("+Math.random()*360+",80%,60%)";
-    ctx.fillRect(p.x,p.y,p.r,p.r);
-  });
-  parts=parts.filter(p=>p.life>0);
-  if(parts.length) requestAnimationFrame(tick);
+    setTimeout(()=>{
+        result.innerHTML = "🎉 恭喜你抽中了：<br><br>📸 拍立得 + 🐶 线条小狗玩具 + 🌹 鲜花 + 💖 我的心";
+    },4000);
 }
 </script>
 
