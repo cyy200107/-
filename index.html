@@ -11,12 +11,8 @@
     --border: 12px;
     --glass: rgba(255,255,255,.16);
     --glass2: rgba(255,255,255,.22);
-    --ink:#0b1220;
     --hot:#ff3d9a;
     --pink:#fb7185;
-    --sky:#60a5fa;
-    --mint:#22c55e;
-    --gold:#fbbf24;
   }
   *{ box-sizing:border-box; }
   body{
@@ -30,7 +26,7 @@
       linear-gradient(135deg,#ff9a9e,#fad0c4);
   }
 
-  /* 背景流光 blob */
+  /* 流光 blob */
   .blob{
     position:fixed; pointer-events:none;
     width:520px; height:520px; border-radius:50%;
@@ -46,7 +42,7 @@
     50%{ transform: translate(70px, 40px) scale(1.06); }
   }
 
-  /* 星光闪烁 */
+  /* 星光 */
   .spark{
     position:fixed; inset:0; pointer-events:none;
     background:
@@ -58,7 +54,7 @@
     opacity:.75;
     animation: twinkle 2.2s ease-in-out infinite alternate;
   }
-  @keyframes twinkle{ from{opacity:.5;} to{opacity:.9;} }
+  @keyframes twinkle{ from{opacity:.5;} to{opacity:.95;} }
 
   h1{
     margin:22px 12px 8px;
@@ -67,7 +63,7 @@
     text-shadow:0 14px 40px rgba(0,0,0,.25);
   }
   .sub{
-    margin:0 16px 16px;
+    margin:0 16px 14px;
     font-size:14px;
     line-height:1.7;
     color:rgba(255,255,255,.9);
@@ -75,7 +71,7 @@
   }
 
   .card{
-    width:min(600px, 92vw);
+    width:min(640px, 92vw);
     margin:0 auto;
     border-radius:22px;
     border:1px solid rgba(255,255,255,.28);
@@ -111,6 +107,30 @@
     box-shadow: 0 10px 24px rgba(0,0,0,.18);
   }
 
+  /* 霓虹滚动条 */
+  .marquee{
+    width:min(640px,92vw);
+    margin:10px auto 0;
+    padding:10px 12px;
+    border-radius:16px;
+    background: rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.22);
+    backdrop-filter: blur(10px);
+    overflow:hidden;
+    box-shadow:0 16px 44px rgba(0,0,0,.12);
+  }
+  .marquee span{
+    display:inline-block;
+    white-space:nowrap;
+    animation: scroll 12s linear infinite;
+    font-weight:1000;
+    letter-spacing:.3px;
+  }
+  @keyframes scroll{
+    from{ transform: translateX(100%); }
+    to{ transform: translateX(-100%); }
+  }
+
   /* 转盘壳 */
   .wheelShell{
     width: var(--wheelSize);
@@ -127,7 +147,6 @@
     backdrop-filter: blur(12px);
   }
 
-  /* 霓虹边框呼吸 */
   .wheelShell::after{
     content:"";
     position:absolute; inset:-10px;
@@ -139,15 +158,15 @@
   }
   @keyframes neon{
     from{ filter: brightness(1); opacity:.7; }
-    to{ filter: brightness(1.2); opacity:1; }
+    to{ filter: brightness(1.25); opacity:1; }
   }
 
-  /* 真正旋转层 */
+  /* ✅ 关键：从 -90deg 开始，保证扇区/分割线/文字全部对齐 */
   #wheel{
     position:absolute; inset:0;
     border-radius:50%;
     transition: transform 4.8s cubic-bezier(.2,1,.25,1);
-    background: conic-gradient(
+    background: conic-gradient(from -90deg,
       #d1d5db 0deg 36deg,
       #e5e7eb 36deg 72deg,
       #d1d5db 72deg 108deg,
@@ -162,21 +181,19 @@
     filter:saturate(1.15) contrast(1.05);
   }
 
-  /* 分割线 */
   .divider{
     position:absolute; inset:0;
     border-radius:50%;
     pointer-events:none;
     background:
       repeating-conic-gradient(from -90deg,
-        rgba(255,255,255,.85) 0deg 1.3deg,
-        transparent 1.3deg 36deg
+        rgba(255,255,255,.90) 0deg 2deg,
+        transparent 2deg 36deg
       );
     mix-blend-mode: overlay;
-    opacity:.85;
+    opacity:.88;
   }
 
-  /* 标签层 */
   #labels{
     position:absolute; inset:0;
     border-radius:50%;
@@ -194,7 +211,7 @@
   }
   .label.small{ font-size:13px; }
 
-  /* 中心 */
+  /* 中心 LOVE：唯一开关 */
   .hub{
     position:absolute; left:50%; top:50%;
     transform:translate(-50%,-50%);
@@ -208,39 +225,24 @@
   .hub .pulse{
     width:78px; height:78px;
     border-radius:50%;
-    background: radial-gradient(circle at 30% 30%, rgba(255,61,154,.9), rgba(251,113,133,.75));
+    background: radial-gradient(circle at 30% 30%, rgba(255,61,154,.92), rgba(251,113,133,.78));
     display:grid; place-items:center;
     color:#fff;
     font-weight:1000;
     letter-spacing:.8px;
     box-shadow: 0 0 24px rgba(255,61,154,.55);
     animation: pulse 1.4s ease-in-out infinite;
+    cursor:pointer;
   }
+  .hub .pulse:active{ transform: scale(.98); }
   @keyframes pulse{
     0%,100%{ transform: scale(1); filter: brightness(1); }
     50%{ transform: scale(1.06); filter: brightness(1.08); }
   }
 
-  /* 按钮 */
-  .btnRow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-  .btn{
-    border:none; cursor:pointer;
-    border-radius:999px;
-    padding:12px 22px;
-    font-size:16px;
-    font-weight:1000;
-    background: rgba(255,255,255,.92);
-    color: var(--ink);
-    box-shadow: 0 16px 34px rgba(0,0,0,.18);
-    transition: transform .08s ease, filter .2s ease;
-  }
-  .btn:hover{ filter: brightness(1.05); }
-  .btn:active{ transform: translateY(1px) scale(.99); }
-  .btn[disabled]{ cursor:not-allowed; filter: brightness(.85); }
-
   #result{
     margin-top:4px;
-    width:min(520px, 92vw);
+    width:min(560px, 92vw);
     padding:14px 14px;
     border-radius:18px;
     border:1px solid rgba(255,255,255,.28);
@@ -258,13 +260,18 @@
     75%{ transform: translateX(3px); }
   }
 
-  /* 提示（自动播放被拦截时才显示） */
-  #audioHint{
-    display:none;
-    margin-top:8px;
-    font-size:12px;
-    color:rgba(255,255,255,.85);
+  .btn{
+    border:none; cursor:pointer;
+    border-radius:999px;
+    padding:12px 22px;
+    font-size:16px;
+    font-weight:1000;
+    background: rgba(255,255,255,.92);
+    color: #111827;
+    box-shadow: 0 16px 34px rgba(0,0,0,.18);
+    transition: transform .08s ease, filter .2s ease;
   }
+  .btn:active{ transform: translateY(1px) scale(.99); }
 
   /* 弹窗 */
   #popup{
@@ -354,30 +361,6 @@
   }
   @keyframes fall{ to{ transform: translateY(110vh); opacity:0; } }
 
-  /* 小彩灯条 */
-  .marquee{
-    width:min(560px,92vw);
-    margin:10px auto 0;
-    padding:10px 12px;
-    border-radius:16px;
-    background: rgba(255,255,255,.18);
-    border:1px solid rgba(255,255,255,.22);
-    backdrop-filter: blur(10px);
-    overflow:hidden;
-    box-shadow:0 16px 44px rgba(0,0,0,.12);
-  }
-  .marquee span{
-    display:inline-block;
-    white-space:nowrap;
-    animation: scroll 12s linear infinite;
-    font-weight:1000;
-    letter-spacing:.3px;
-  }
-  @keyframes scroll{
-    from{ transform: translateX(100%); }
-    to{ transform: translateX(-100%); }
-  }
-
   canvas{ position:fixed; inset:0; pointer-events:none; z-index:80; }
 
   @media (max-width:390px){
@@ -394,10 +377,10 @@
   <canvas id="fx"></canvas>
 
   <h1>幸运转盘 💖</h1>
-  <div class="sub">别紧张～就当抽个小惊喜。</div>
+  <div class="sub">点中间 <b>LOVE</b> 开始抽奖～</div>
 
   <div class="marquee">
-    <span>✨ 今日好运加载中…　💞 心动值上升中…　🎁 礼物正在路上…　🌹 你先按开始转～</span>
+    <span>✨ 好运加载中…　💞 心动值上升中…　🎁 礼物正在路上…　🌹 你先点 LOVE～</span>
   </div>
 
   <div class="card">
@@ -407,19 +390,14 @@
       <div class="wheelShell">
         <div id="wheel"><div id="labels"></div></div>
         <div class="divider"></div>
-        <div class="hub"><div class="pulse">LOVE</div></div>
+        <div class="hub"><div class="pulse" id="loveBtn">LOVE</div></div>
       </div>
 
-      <div class="btnRow">
-        <button class="btn" id="spinBtn">开始转</button>
-      </div>
-
-      <div id="audioHint">如果你没听到音乐：点一下「开始转」即可开启 🎵</div>
-      <div id="result">准备好了吗？点「开始转」就开始。</div>
+      <div id="result">准备好了吗？点 LOVE 开始。</div>
     </div>
   </div>
 
-  <!-- 情歌：会尝试自动播放；被拦截就等你点按钮解锁 -->
+  <!-- 只有BGM，没有任何开关按钮（手机可能拦截自动播放，点LOVE会解锁） -->
   <audio id="bgm" loop autoplay playsinline>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5a6fa2e1f3.mp3?filename=romantic-background-112199.mp3" type="audio/mp3">
   </audio>
@@ -432,272 +410,268 @@
   </div>
 
 <script>
-/* ========= DOM ========= */
-const wheel = document.getElementById("wheel");
-const labels = document.getElementById("labels");
-const spinBtn = document.getElementById("spinBtn");
-const result = document.getElementById("result");
-const audioHint = document.getElementById("audioHint");
+  /* ========= DOM ========= */
+  const wheel = document.getElementById("wheel");
+  const labels = document.getElementById("labels");
+  const loveBtn = document.getElementById("loveBtn");
+  const result = document.getElementById("result");
 
-const popup = document.getElementById("popup");
-const closeX = document.getElementById("closeX");
-const popupInner = document.getElementById("popupInner");
+  const popup = document.getElementById("popup");
+  const closeX = document.getElementById("closeX");
+  const popupInner = document.getElementById("popupInner");
 
-const bgm = document.getElementById("bgm");
+  const bgm = document.getElementById("bgm");
 
-/* ========= 转盘文字 ========= */
-const prizes = [
-  "没中奖","没中奖","没中奖","没中奖","没中奖","没中奖",
-  "📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"
-];
-const N = prizes.length;
-const STEP = 360 / N;
-const POINTER_AT = -90;
-const WIN_INDEX = 9;
+  /* ========= 转盘文字（对齐扇区中心） ========= */
+  const prizes = [
+    "没中奖","没中奖","没中奖","没中奖","没中奖","没中奖",
+    "📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"
+  ];
+  const N = prizes.length;
+  const STEP = 360 / N;
+  const POINTER_AT = -90;
+  const WIN_INDEX = 9; // 最后一格：获得所有礼品
 
-const r = 128;
-prizes.forEach((text,i)=>{
-  const centerAngle = POINTER_AT + i*STEP + STEP/2;
-  const el = document.createElement("div");
-  el.className = "label" + (text.length>=6 ? " small" : "");
-  el.textContent = text;
-  el.style.color = (text==="没中奖") ? "#6b7280" : "#111827";
-  el.style.transform =
-    `rotate(${centerAngle}deg) translate(${r}px, -10px) rotate(${-centerAngle}deg) translate(-50%, 0)`;
-  labels.appendChild(el);
-});
+  const r = 128;
+  prizes.forEach((text,i)=>{
+    const centerAngle = POINTER_AT + i*STEP + STEP/2; // 每扇区中心角
+    const el = document.createElement("div");
+    el.className = "label" + (text.length>=6 ? " small" : "");
+    el.textContent = text;
+    el.style.color = (text==="没中奖") ? "#6b7280" : "#111827";
+    el.style.transform =
+      `rotate(${centerAngle}deg) translate(${r}px, -10px) rotate(${-centerAngle}deg) translate(-50%, 0)`;
+    labels.appendChild(el);
+  });
 
-function computeRotationToLandOn(index){
-  const winCenter = POINTER_AT + index*STEP + STEP/2;
-  const baseRotation = POINTER_AT - winCenter;
-  const spins = 9;
-  return spins*360 + baseRotation;
-}
-
-/* ========= 音乐自动播放（可能被手机拦截） ========= */
-let unlocked = false;
-async function tryAutoplay(){
-  try{
-    await bgm.play();
-    audioHint.style.display = "none";
-  }catch(e){
-    audioHint.style.display = "block";
+  function computeRotationToLandOn(index){
+    // wheel 背景从 -90deg 开始，所以指针所在方向对应 POINTER_AT
+    const winCenter = POINTER_AT + index*STEP + STEP/2;
+    const baseRotation = POINTER_AT - winCenter;
+    const spins = 9;
+    return spins*360 + baseRotation;
   }
-}
-document.addEventListener("DOMContentLoaded", tryAutoplay);
 
-/* 任何第一次交互都尝试解锁音频 */
-async function unlockAudio(){
-  if(unlocked) return;
-  unlocked = true;
-  try{ await bgm.play(); audioHint.style.display="none"; }catch(e){}
-}
-document.addEventListener("pointerdown", unlockAudio, { once:true });
+  /* ========= 音乐：无开关，仅尝试自动播放；点LOVE必解锁 ========= */
+  let audioUnlocked = false;
+  async function tryAutoplay(){
+    try{ await bgm.play(); }catch(e){}
+  }
+  document.addEventListener("DOMContentLoaded", tryAutoplay);
 
-/* ========= 可无限重复转：关键就是累加 rotation ========= */
-let currentRotation = 0;
+  async function unlockAudio(){
+    if(audioUnlocked) return;
+    audioUnlocked = true;
+    try{ await bgm.play(); }catch(e){}
+  }
 
-spinBtn.addEventListener("click", async ()=>{
-  await unlockAudio(); // 点开始转一定开音乐
+  /* ========= Canvas 彩带 ========= */
+  const canvas = document.getElementById("fx");
+  const ctx = canvas.getContext("2d");
+  let W=0,H=0,parts=[],raf=null;
+  function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+  addEventListener("resize", resize); resize();
 
-  spinBtn.disabled = true;
+  function confettiBurst(){
+    parts = [];
+    for(let i=0;i<220;i++){
+      parts.push({
+        x: Math.random()*W, y: -30 - Math.random()*H*0.15,
+        vx: -3 + Math.random()*6, vy: 3 + Math.random()*9,
+        r: 3 + Math.random()*7,
+        rot: Math.random()*Math.PI,
+        vr: -0.25 + Math.random()*0.5,
+        life: 150 + Math.random()*80
+      });
+    }
+    if(raf) cancelAnimationFrame(raf);
+    tick();
+  }
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    for(const p of parts){
+      p.x += p.vx; p.y += p.vy; p.vy *= 1.01; p.rot += p.vr; p.life -= 1;
+      const a = Math.max(0, Math.min(1, p.life/220));
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.globalAlpha = a;
 
-  // 抽之前滚动“预告”，更不露馅
-  const fakePool = ["没中奖","📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"];
-  const preview = fakePool[Math.floor(Math.random()*fakePool.length)];
-  result.classList.remove("shake");
-  result.innerHTML = `转盘启动中…💞 可能会抽到：<b>${preview}</b>`;
+      const g = ctx.createLinearGradient(-p.r,-p.r,p.r,p.r);
+      g.addColorStop(0, "rgba(255,61,154,0.95)");
+      g.addColorStop(0.5,"rgba(96,165,250,0.95)");
+      g.addColorStop(1, "rgba(34,197,94,0.95)");
+      ctx.fillStyle = g;
+      ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);
 
-  // 视觉抖动（仍然落同一扇区）
-  const wiggle = (Math.random()*8 - 4);
-  const base = computeRotationToLandOn(WIN_INDEX);
+      ctx.restore();
+    }
+    parts = parts.filter(p=>p.life>0 && p.y < H+60);
+    if(parts.length) raf = requestAnimationFrame(tick);
+    else ctx.clearRect(0,0,W,H);
+  }
 
-  // 每次都加上新的圈数 -> 保证每次都重新转动
-  currentRotation += base + wiggle;
-  wheel.style.transform = `rotate(${currentRotation}deg)`;
+  /* ========= 爱心雨 ========= */
+  function heartsBurst(count=60){
+    for(let i=0;i<count;i++){
+      const h = document.createElement("div");
+      h.className="heart";
+      h.textContent = ["💖","💘","💗","💞","💓"][Math.floor(Math.random()*5)];
+      h.style.left = (Math.random()*100) + "vw";
+      h.style.animationDuration = (3 + Math.random()*3) + "s";
+      h.style.fontSize = (16 + Math.random()*16) + "px";
+      h.style.opacity = (0.65 + Math.random()*0.35).toFixed(2);
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(), 6500);
+    }
+  }
+  setInterval(()=>{ if(Math.random()<0.35) heartsBurst(4); }, 900);
 
-  // 转动时手机轻震（可用则用，不可用就忽略）
-  try{ if(navigator.vibrate) navigator.vibrate([30,20,30]); }catch(e){}
+  /* ========= 弹窗：不愿意逃跑 + 点到不愿意会要求重新选 ========= */
+  function showPopup(){
+    popup.style.display="flex";
+    renderChoiceUI();
+    moveNoBtn(true);
+  }
+  function hidePopup(){ popup.style.display="none"; }
+  closeX.addEventListener("click", hidePopup);
+  popup.addEventListener("click", (e)=>{ if(e.target===popup) hidePopup(); });
 
-  setTimeout(()=>{
-    result.classList.add("shake");
-    result.innerHTML = `
-      <div class="winTitle">🎉 恭喜你获得：</div>
-      📸 拍立得 + 🐶 线条小狗 + 🌹 鲜花 + 💖 获得所有礼品<br><br>
-      <button class="btn" id="claimBtn">点击领取</button>
-    `;
-    confettiBurst();
-    heartsBurst(45);
-
-    document.getElementById("claimBtn").addEventListener("click", showPopup);
-    spinBtn.disabled = false;
-  }, 4900);
-});
-
-/* ========= 弹窗：不愿意逃跑 + 点到不愿意就重新选 ========= */
-function showPopup(){
-  popup.style.display="flex";
-  renderChoiceUI();
-  moveNoBtn(true);
-}
-function hidePopup(){ popup.style.display="none"; }
-closeX.addEventListener("click", hidePopup);
-popup.addEventListener("click", (e)=>{ if(e.target===popup) hidePopup(); });
-
-function renderChoiceUI(){
-  popupInner.innerHTML = `
-    <h2>你愿意做我的女朋友吗？💖</h2>
-    <div class="popupHint">（别急，选一下）</div>
-
-    <div class="chooseArea" id="chooseArea">
-      <button class="yesBtn" id="yesBtn">愿意 💕</button>
-      <button class="noBtn" id="noBtn">不愿意 🙈</button>
-    </div>
-
-    <div style="margin-top:12px;color:#111827;font-weight:900;font-size:13px;line-height:1.6;">
-      选完就可以领取礼物啦。
-    </div>
-  `;
-
-  const yesBtn = document.getElementById("yesBtn");
-  const noBtn  = document.getElementById("noBtn");
-  const area   = document.getElementById("chooseArea");
-
-  yesBtn.addEventListener("click", ()=>{
+  function renderChoiceUI(){
     popupInner.innerHTML = `
-      <h2>从今天开始，你就是我的女朋友了 💕</h2>
-      <div style="margin-top:10px;color:#111827;font-weight:1000;line-height:1.7;">
-        以后每一个节日、每一次开心、每一次委屈，<br>
-        我都想以男朋友的身份陪在你身边。
-      </div>
-      <div style="margin-top:14px;color:#7c3aed;font-weight:900;">
-        （礼物我都准备好了😏）
-      </div>
-      <div style="margin-top:16px;">
-        <button class="btn" id="okBtn">我知道啦 🥰</button>
-      </div>
-    `;
-    document.getElementById("okBtn").addEventListener("click", hidePopup);
-    confettiBurst(); heartsBurst(90);
-    try{ if(navigator.vibrate) navigator.vibrate([60,30,60]); }catch(e){}
-  });
+      <h2>你愿意做我的女朋友吗？💖</h2>
+      <div class="popupHint">（认真选一下哦）</div>
 
-  // 真点到“不愿意”：让她重新选
-  noBtn.addEventListener("click", ()=>{
-    popupInner.innerHTML = `
-      <h2>再选一次 😏</h2>
-      <div class="popupHint">你是不是点错了？</div>
-      <div style="margin-top:10px;color:#111827;font-weight:1000;">
-        没关系，重新来～
+      <div class="chooseArea" id="chooseArea">
+        <button class="yesBtn" id="yesBtn">愿意 💕</button>
+        <button class="noBtn" id="noBtn">不愿意 🙈</button>
       </div>
-      <div style="margin-top:14px;">
-        <button class="btn" id="againBtn">重新选择</button>
+
+      <div style="margin-top:12px;color:#111827;font-weight:900;font-size:13px;line-height:1.6;">
+        选完就可以领取礼物啦。
       </div>
     `;
-    document.getElementById("againBtn").addEventListener("click", ()=>{
-      renderChoiceUI();
-      moveNoBtn(true);
+
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn  = document.getElementById("noBtn");
+    const area   = document.getElementById("chooseArea");
+
+    yesBtn.addEventListener("click", ()=>{
+      popupInner.innerHTML = `
+        <h2>从今天开始，你就是我的女朋友了 💕</h2>
+        <div style="margin-top:10px;color:#111827;font-weight:1000;line-height:1.7;">
+          以后每一个节日、每一次开心、每一次委屈，<br>
+          我都想以男朋友的身份陪在你身边。
+        </div>
+        <div style="margin-top:14px;color:#7c3aed;font-weight:900;">
+          （礼物我都准备好了😏）
+        </div>
+        <div style="margin-top:16px;">
+          <button class="btn" id="okBtn">我知道啦 🥰</button>
+        </div>
+      `;
+      document.getElementById("okBtn").addEventListener("click", hidePopup);
+      confettiBurst(); heartsBurst(90);
     });
-  });
 
-  attachEscape(noBtn, area);
-}
+    noBtn.addEventListener("click", ()=>{
+      popupInner.innerHTML = `
+        <h2>再选一次 😏</h2>
+        <div class="popupHint">你是不是点错了？</div>
+        <div style="margin-top:10px;color:#111827;font-weight:1000;">
+          没关系，重新来～
+        </div>
+        <div style="margin-top:14px;">
+          <button class="btn" id="againBtn">重新选择</button>
+        </div>
+      `;
+      document.getElementById("againBtn").addEventListener("click", ()=>{
+        renderChoiceUI();
+        moveNoBtn(true);
+      });
+    });
 
-/* 逃跑逻辑：靠近就跑 + 触摸就跑 + 靠近范围也跑 */
-function rand(min,max){ return min + Math.random()*(max-min); }
-function moveNoBtn(isFirst=false){
-  const no = document.getElementById("noBtn");
-  const area = document.getElementById("chooseArea");
-  if(!no || !area) return;
+    attachEscape(noBtn, area);
+  }
 
-  const pad = 10;
-  const areaW = area.clientWidth;
-  const areaH = area.clientHeight;
-  const btnW = no.offsetWidth || 96;
-  const btnH = no.offsetHeight || 42;
+  function rand(min,max){ return min + Math.random()*(max-min); }
+  function moveNoBtn(isFirst=false){
+    const no = document.getElementById("noBtn");
+    const area = document.getElementById("chooseArea");
+    if(!no || !area) return;
 
-  let x, y, tries=0;
-  do{
-    x = rand(pad, areaW - btnW - pad);
-    y = rand(pad, areaH - btnH - pad);
-    tries++;
-  }while(tries<14 && x < 160 && y > 40 && y < 130); // 避开愿意区域
+    const pad = 10;
+    const areaW = area.clientWidth;
+    const areaH = area.clientHeight;
+    const btnW = no.offsetWidth || 96;
+    const btnH = no.offsetHeight || 42;
 
-  no.style.left = x + "px";
-  no.style.top  = y + "px";
-  no.style.transform = isFirst ? "scale(1)" : `scale(${rand(.9,1.08).toFixed(2)})`;
-}
-function attachEscape(no, area){
-  const run = ()=>moveNoBtn(false);
-  no.addEventListener("mouseenter", run);
-  no.addEventListener("touchstart", (e)=>{ e.preventDefault(); run(); }, {passive:false});
-  area.addEventListener("mousemove", (e)=>{
-    const rect = no.getBoundingClientRect();
-    const dx = e.clientX - (rect.left + rect.width/2);
-    const dy = e.clientY - (rect.top  + rect.height/2);
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    if(dist < 95) run();
-  });
-}
+    let x, y, tries=0;
+    do{
+      x = rand(pad, areaW - btnW - pad);
+      y = rand(pad, areaH - btnH - pad);
+      tries++;
+    }while(tries<14 && x < 160 && y > 40 && y < 130);
 
-/* ========= Canvas 彩带 ========= */
-const canvas = document.getElementById("fx");
-const ctx = canvas.getContext("2d");
-let W=0,H=0,parts=[],raf=null;
-function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
-addEventListener("resize", resize); resize();
-
-function confettiBurst(){
-  parts = [];
-  for(let i=0;i<220;i++){
-    parts.push({
-      x: Math.random()*W, y: -30 - Math.random()*H*0.15,
-      vx: -3 + Math.random()*6, vy: 3 + Math.random()*9,
-      r: 3 + Math.random()*7,
-      rot: Math.random()*Math.PI,
-      vr: -0.25 + Math.random()*0.5,
-      life: 150 + Math.random()*80
+    no.style.left = x + "px";
+    no.style.top  = y + "px";
+    no.style.transform = isFirst ? "scale(1)" : `scale(${rand(.9,1.08).toFixed(2)})`;
+  }
+  function attachEscape(no, area){
+    const run = ()=>moveNoBtn(false);
+    no.addEventListener("mouseenter", run);
+    no.addEventListener("touchstart", (e)=>{ e.preventDefault(); run(); }, {passive:false});
+    area.addEventListener("mousemove", (e)=>{
+      const rect = no.getBoundingClientRect();
+      const dx = e.clientX - (rect.left + rect.width/2);
+      const dy = e.clientY - (rect.top  + rect.height/2);
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if(dist < 95) run();
     });
   }
-  if(raf) cancelAnimationFrame(raf);
-  tick();
-}
-function tick(){
-  ctx.clearRect(0,0,W,H);
-  for(const p of parts){
-    p.x += p.vx; p.y += p.vy; p.vy *= 1.01; p.rot += p.vr; p.life -= 1;
-    const a = Math.max(0, Math.min(1, p.life/220));
-    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.globalAlpha = a;
 
-    const g = ctx.createLinearGradient(-p.r,-p.r,p.r,p.r);
-    g.addColorStop(0, "rgba(255,61,154,0.95)");
-    g.addColorStop(0.5,"rgba(96,165,250,0.95)");
-    g.addColorStop(1, "rgba(34,197,94,0.95)");
-    ctx.fillStyle = g;
-    ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);
+  /* ========= 抽奖：LOVE 是唯一开始键；转动中显示“你可能未中奖…” ========= */
+  let currentRotation = 0;
+  let spinning = false;
 
-    ctx.restore();
-  }
-  parts = parts.filter(p=>p.life>0 && p.y < H+60);
-  if(parts.length) raf = requestAnimationFrame(tick);
-  else ctx.clearRect(0,0,W,H);
-}
+  loveBtn.addEventListener("click", async ()=>{
+    if(spinning) return;
+    spinning = true;
 
-/* ========= 爱心雨 ========= */
-function heartsBurst(count=60){
-  for(let i=0;i<count;i++){
-    const h = document.createElement("div");
-    h.className="heart";
-    h.textContent = ["💖","💘","💗","💞","💓"][Math.floor(Math.random()*5)];
-    h.style.left = (Math.random()*100) + "vw";
-    h.style.animationDuration = (3 + Math.random()*3) + "s";
-    h.style.fontSize = (16 + Math.random()*16) + "px";
-    h.style.opacity = (0.65 + Math.random()*0.35).toFixed(2);
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(), 6500);
-  }
-}
-setInterval(()=>{ if(Math.random()<0.35) heartsBurst(4); }, 900);
+    await unlockAudio();
+
+    // 转动中：不露馅，始终“可能未中奖”
+    result.classList.remove("shake");
+    result.innerHTML = `你可能未中奖…`;
+
+    // 仍然给“随机感”的假预告（不改变结果）
+    const fakePool = ["没中奖","📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"];
+    let t = 0;
+    const timer = setInterval(()=>{
+      // 仍然保持“可能未中奖…”为主句，下面插一句随机预告
+      const preview = fakePool[Math.floor(Math.random()*fakePool.length)];
+      result.innerHTML = `你可能未中奖…<br><span style="font-size:13px;opacity:.92;">（也可能会抽到：<b>${preview}</b>）</span>`;
+      t++;
+      if(t>=7) clearInterval(timer);
+    }, 420);
+
+    const wiggle = (Math.random()*8 - 4);
+    const base = computeRotationToLandOn(WIN_INDEX);
+    currentRotation += base + wiggle;
+    wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+    setTimeout(()=>{
+      result.classList.add("shake");
+      result.innerHTML = `
+        <div class="winTitle">🎉 恭喜你获得：</div>
+        📸 拍立得 + 🐶 线条小狗 + 🌹 鲜花 + 💖 获得所有礼品<br><br>
+        <button class="btn" id="claimBtn">点击领取</button>
+      `;
+      confettiBurst();
+      heartsBurst(55);
+
+      document.getElementById("claimBtn").addEventListener("click", showPopup);
+      spinning = false;
+    }, 4900);
+  });
 </script>
 </body>
 </html>
+
