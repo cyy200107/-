@@ -26,7 +26,6 @@
       linear-gradient(135deg,#ff9a9e,#fad0c4);
   }
 
-  /* 流光 blob */
   .blob{
     position:fixed; pointer-events:none;
     width:520px; height:520px; border-radius:50%;
@@ -42,7 +41,6 @@
     50%{ transform: translate(70px, 40px) scale(1.06); }
   }
 
-  /* 星光 */
   .spark{
     position:fixed; inset:0; pointer-events:none;
     background:
@@ -86,7 +84,6 @@
     padding-top:6px;
   }
 
-  /* 指针 */
   .pointer{
     position:relative;
     width:0;height:0;
@@ -107,7 +104,6 @@
     box-shadow: 0 10px 24px rgba(0,0,0,.18);
   }
 
-  /* 霓虹滚动条 */
   .marquee{
     width:min(640px,92vw);
     margin:10px auto 0;
@@ -131,7 +127,6 @@
     to{ transform: translateX(-100%); }
   }
 
-  /* 转盘壳 */
   .wheelShell{
     width: var(--wheelSize);
     height: var(--wheelSize);
@@ -161,7 +156,7 @@
     to{ filter: brightness(1.25); opacity:1; }
   }
 
-  /* ✅ 关键：从 -90deg 开始，保证扇区/分割线/文字全部对齐 */
+  /* 扇区从 -90deg 开始，保证扇区/分割线对齐 */
   #wheel{
     position:absolute; inset:0;
     border-radius:50%;
@@ -179,6 +174,7 @@
       rgba(255,107,107,.95) 324deg 360deg
     );
     filter:saturate(1.15) contrast(1.05);
+    will-change: transform;
   }
 
   .divider{
@@ -199,9 +195,11 @@
     border-radius:50%;
     pointer-events:none;
   }
+
+  /* ✅ 新的文字布局：以圆心为锚，不会漂移 */
   .label{
     position:absolute;
-    top:50%; left:50%;
+    left:50%; top:50%;
     transform-origin: 0 0;
     font-size:14px;
     font-weight:1000;
@@ -211,7 +209,7 @@
   }
   .label.small{ font-size:13px; }
 
-  /* 中心 LOVE：唯一开关 */
+  /* ✅ LOVE 改成 button，pointerdown 更稳 */
   .hub{
     position:absolute; left:50%; top:50%;
     transform:translate(-50%,-50%);
@@ -220,21 +218,23 @@
     background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,.75));
     box-shadow: 0 18px 44px rgba(0,0,0,.25);
     display:grid; place-items:center;
-    z-index:10; user-select:none;
+    z-index:30;
+    user-select:none;
   }
-  .hub .pulse{
+  #loveBtn{
     width:78px; height:78px;
     border-radius:50%;
+    border:none;
     background: radial-gradient(circle at 30% 30%, rgba(255,61,154,.92), rgba(251,113,133,.78));
-    display:grid; place-items:center;
     color:#fff;
     font-weight:1000;
     letter-spacing:.8px;
     box-shadow: 0 0 24px rgba(255,61,154,.55);
     animation: pulse 1.4s ease-in-out infinite;
     cursor:pointer;
+    touch-action: manipulation; /* ✅ 防止被当成缩放/拖拽 */
   }
-  .hub .pulse:active{ transform: scale(.98); }
+  #loveBtn:active{ transform: scale(.98); }
   @keyframes pulse{
     0%,100%{ transform: scale(1); filter: brightness(1); }
     50%{ transform: scale(1.06); filter: brightness(1.08); }
@@ -269,11 +269,9 @@
     background: rgba(255,255,255,.92);
     color: #111827;
     box-shadow: 0 16px 34px rgba(0,0,0,.18);
-    transition: transform .08s ease, filter .2s ease;
   }
   .btn:active{ transform: translateY(1px) scale(.99); }
 
-  /* 弹窗 */
   #popup{
     display:none;
     position:fixed; inset:0;
@@ -349,7 +347,6 @@
     z-index:5;
   }
 
-  /* 爱心雨 */
   .heart{
     position:fixed;
     top:-12px;
@@ -390,14 +387,17 @@
       <div class="wheelShell">
         <div id="wheel"><div id="labels"></div></div>
         <div class="divider"></div>
-        <div class="hub"><div class="pulse" id="loveBtn">LOVE</div></div>
+
+        <div class="hub">
+          <button id="loveBtn" type="button" aria-label="LOVE">LOVE</button>
+        </div>
       </div>
 
       <div id="result">准备好了吗？点 LOVE 开始。</div>
     </div>
   </div>
 
-  <!-- 只有BGM，没有任何开关按钮（手机可能拦截自动播放，点LOVE会解锁） -->
+  <!-- 只有BGM，无开关（浏览器若拦截自动播放，点LOVE会解锁） -->
   <audio id="bgm" loop autoplay playsinline>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5a6fa2e1f3.mp3?filename=romantic-background-112199.mp3" type="audio/mp3">
   </audio>
@@ -410,7 +410,6 @@
   </div>
 
 <script>
-  /* ========= DOM ========= */
   const wheel = document.getElementById("wheel");
   const labels = document.getElementById("labels");
   const loveBtn = document.getElementById("loveBtn");
@@ -422,41 +421,41 @@
 
   const bgm = document.getElementById("bgm");
 
-  /* ========= 转盘文字（对齐扇区中心） ========= */
-  const prizes = [
-    "没中奖","没中奖","没中奖","没中奖","没中奖","没中奖",
-    "📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"
-  ];
+  // ====== 扇区配置 ======
+  const prizes = ["没中奖","没中奖","没中奖","没中奖","没中奖","没中奖","📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"];
   const N = prizes.length;
   const STEP = 360 / N;
   const POINTER_AT = -90;
-  const WIN_INDEX = 9; // 最后一格：获得所有礼品
+  const WIN_INDEX = 9;
 
-  const r = 128;
+  // ====== 文字对齐（稳定版） ======
+  const radius = 135; // 文字离圆心距离
   prizes.forEach((text,i)=>{
-    const centerAngle = POINTER_AT + i*STEP + STEP/2; // 每扇区中心角
+    const centerAngle = POINTER_AT + i*STEP + STEP/2;
+
     const el = document.createElement("div");
     el.className = "label" + (text.length>=6 ? " small" : "");
     el.textContent = text;
+
     el.style.color = (text==="没中奖") ? "#6b7280" : "#111827";
+
+    // ✅ 以圆心为锚：translate(-50%,-50%) -> rotate -> translate -> rotate back
     el.style.transform =
-      `rotate(${centerAngle}deg) translate(${r}px, -10px) rotate(${-centerAngle}deg) translate(-50%, 0)`;
+      `translate(-50%,-50%) rotate(${centerAngle}deg) translate(${radius}px,0) rotate(${-centerAngle}deg)`;
+
     labels.appendChild(el);
   });
 
   function computeRotationToLandOn(index){
-    // wheel 背景从 -90deg 开始，所以指针所在方向对应 POINTER_AT
     const winCenter = POINTER_AT + index*STEP + STEP/2;
     const baseRotation = POINTER_AT - winCenter;
     const spins = 9;
     return spins*360 + baseRotation;
   }
 
-  /* ========= 音乐：无开关，仅尝试自动播放；点LOVE必解锁 ========= */
+  // ====== BGM：尝试自动播放；LOVE 会强制解锁 ======
   let audioUnlocked = false;
-  async function tryAutoplay(){
-    try{ await bgm.play(); }catch(e){}
-  }
+  async function tryAutoplay(){ try{ await bgm.play(); }catch(e){} }
   document.addEventListener("DOMContentLoaded", tryAutoplay);
 
   async function unlockAudio(){
@@ -465,7 +464,7 @@
     try{ await bgm.play(); }catch(e){}
   }
 
-  /* ========= Canvas 彩带 ========= */
+  // ====== 彩带 ======
   const canvas = document.getElementById("fx");
   const ctx = canvas.getContext("2d");
   let W=0,H=0,parts=[],raf=null;
@@ -508,7 +507,7 @@
     else ctx.clearRect(0,0,W,H);
   }
 
-  /* ========= 爱心雨 ========= */
+  // ====== 爱心雨 ======
   function heartsBurst(count=60){
     for(let i=0;i<count;i++){
       const h = document.createElement("div");
@@ -524,7 +523,7 @@
   }
   setInterval(()=>{ if(Math.random()<0.35) heartsBurst(4); }, 900);
 
-  /* ========= 弹窗：不愿意逃跑 + 点到不愿意会要求重新选 ========= */
+  // ====== 弹窗：不愿意逃跑 + 点不愿意要求重选 ======
   function showPopup(){
     popup.style.display="flex";
     renderChoiceUI();
@@ -538,12 +537,10 @@
     popupInner.innerHTML = `
       <h2>你愿意做我的女朋友吗？💖</h2>
       <div class="popupHint">（认真选一下哦）</div>
-
       <div class="chooseArea" id="chooseArea">
         <button class="yesBtn" id="yesBtn">愿意 💕</button>
         <button class="noBtn" id="noBtn">不愿意 🙈</button>
       </div>
-
       <div style="margin-top:12px;color:#111827;font-weight:900;font-size:13px;line-height:1.6;">
         选完就可以领取礼物啦。
       </div>
@@ -575,9 +572,7 @@
       popupInner.innerHTML = `
         <h2>再选一次 😏</h2>
         <div class="popupHint">你是不是点错了？</div>
-        <div style="margin-top:10px;color:#111827;font-weight:1000;">
-          没关系，重新来～
-        </div>
+        <div style="margin-top:10px;color:#111827;font-weight:1000;">没关系，重新来～</div>
         <div style="margin-top:14px;">
           <button class="btn" id="againBtn">重新选择</button>
         </div>
@@ -617,8 +612,8 @@
   function attachEscape(no, area){
     const run = ()=>moveNoBtn(false);
     no.addEventListener("mouseenter", run);
-    no.addEventListener("touchstart", (e)=>{ e.preventDefault(); run(); }, {passive:false});
-    area.addEventListener("mousemove", (e)=>{
+    no.addEventListener("pointerdown", (e)=>{ e.preventDefault(); run(); });
+    area.addEventListener("pointermove", (e)=>{
       const rect = no.getBoundingClientRect();
       const dx = e.clientX - (rect.left + rect.width/2);
       const dy = e.clientY - (rect.top  + rect.height/2);
@@ -627,25 +622,20 @@
     });
   }
 
-  /* ========= 抽奖：LOVE 是唯一开始键；转动中显示“你可能未中奖…” ========= */
+  // ====== 抽奖：LOVE 是唯一开始键；每次按都重新转 ======
   let currentRotation = 0;
   let spinning = false;
 
-  loveBtn.addEventListener("click", async ()=>{
+  function startSpin(){
     if(spinning) return;
     spinning = true;
 
-    await unlockAudio();
-
-    // 转动中：不露馅，始终“可能未中奖”
     result.classList.remove("shake");
     result.innerHTML = `你可能未中奖…`;
 
-    // 仍然给“随机感”的假预告（不改变结果）
     const fakePool = ["没中奖","📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"];
     let t = 0;
     const timer = setInterval(()=>{
-      // 仍然保持“可能未中奖…”为主句，下面插一句随机预告
       const preview = fakePool[Math.floor(Math.random()*fakePool.length)];
       result.innerHTML = `你可能未中奖…<br><span style="font-size:13px;opacity:.92;">（也可能会抽到：<b>${preview}</b>）</span>`;
       t++;
@@ -655,6 +645,7 @@
     const wiggle = (Math.random()*8 - 4);
     const base = computeRotationToLandOn(WIN_INDEX);
     currentRotation += base + wiggle;
+
     wheel.style.transform = `rotate(${currentRotation}deg)`;
 
     setTimeout(()=>{
@@ -670,8 +661,14 @@
       document.getElementById("claimBtn").addEventListener("click", showPopup);
       spinning = false;
     }, 4900);
+  }
+
+  // ✅ 用 pointerdown 更稳（Mac/触屏都OK）
+  loveBtn.addEventListener("pointerdown", async (e)=>{
+    e.preventDefault();
+    await unlockAudio();
+    startSpin();
   });
 </script>
 </body>
 </html>
-
