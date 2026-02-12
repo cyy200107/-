@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>100%中奖抽奖</title>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:linear-gradient(135deg,#1e293b,#0f172a);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+}
+
+.card{
+  width:420px;
+  background:#111827;
+  padding:30px;
+  border-radius:20px;
+  text-align:center;
+  box-shadow:0 20px 50px #00000088;
+}
+
+h1{
+  margin:0 0 10px 0;
+}
+
+.badge{
+  display:inline-block;
+  background:linear-gradient(90deg,#22c55e,#a3e635);
+  color:#052e16;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+.prizes{
+  text-align:left;
+  margin:15px 0;
+  font-size:14px;
+  color:#cbd5e1;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-weight:bold;
+  cursor:pointer;
+  background:linear-gradient(90deg,#22c55e,#a3e635);
+  color:#052e16;
+  font-size:15px;
+  margin-top:10px;
+}
+
+.result{
+  margin-top:20px;
+  padding:18px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#fbbf24,#fb7185);
+  color:#111;
+  font-weight:bold;
+  display:none;
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="fx"></canvas>
+
+<div class="card">
+  <h1>🎁 抽奖活动</h1>
+  <div class="badge">中奖率 100%</div>
+
+  <div class="prizes">
+    📸 拍立得<br>
+    🐶 线条小狗玩具<br>
+    💐 鲜花<br>
+    🏆 全部都中了
+  </div>
+
+  <button onclick="draw()">立即抽奖</button>
+
+  <div class="result" id="resultBox">
+    🎉 恭喜你！<br><br>
+    🏆 你抽中了：<br><br>
+    📸 拍立得 + 🐶 线条小狗玩具 + 💐 鲜花
+  </div>
+</div>
+
+<script>
+function draw(){
+  document.getElementById("resultBox").style.display="block";
+  confetti();
+}
+
+// 简单彩带动画
+const canvas=document.getElementById("fx");
+const ctx=canvas.getContext("2d");
+let W,H,parts=[];
+function resize(){
+  W=canvas.width=innerWidth;
+  H=canvas.height=innerHeight;
+}
+resize();
+addEventListener("resize",resize);
+
+function confetti(){
+  parts=[];
+  for(let i=0;i<120;i++){
+    parts.push({
+      x:Math.random()*W,
+      y:-20,
+      vx:-2+Math.random()*4,
+      vy:3+Math.random()*6,
+      r:3+Math.random()*4,
+      life:100+Math.random()*50
+    });
+  }
+  requestAnimationFrame(tick);
+}
+
+function tick(){
+  ctx.clearRect(0,0,W,H);
+  parts.forEach(p=>{
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.life--;
+    ctx.fillStyle="hsl("+Math.random()*360+",80%,60%)";
+    ctx.fillRect(p.x,p.y,p.r,p.r);
+  });
+  parts=parts.filter(p=>p.life>0);
+  if(parts.length) requestAnimationFrame(tick);
+}
+</script>
+
+</body>
+</html>
