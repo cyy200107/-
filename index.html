@@ -65,7 +65,7 @@
     margin:0 auto;
     border-radius:22px;
     border:1px solid rgba(255,255,255,.28);
-    background: var(--glass);
+    background: rgba(255,255,255,.14);
     backdrop-filter: blur(12px);
     box-shadow: 0 28px 90px rgba(0,0,0,.18);
     padding:18px 14px 16px;
@@ -107,7 +107,6 @@
   }
   @keyframes neon{ from{ filter: brightness(1); opacity:.7; } to{ filter: brightness(1.25); opacity:1; } }
 
-  /* ✅ SVG 轮盘：转动只转这个容器 */
   #wheel{
     position:absolute; inset:0;
     border-radius:50%;
@@ -115,7 +114,6 @@
     will-change: transform;
   }
 
-  /* LOVE 按钮 */
   .hub{
     position:absolute; left:50%; top:50%;
     transform:translate(-50%,-50%);
@@ -150,7 +148,7 @@
     padding:14px 14px;
     border-radius:18px;
     border:1px solid rgba(255,255,255,.28);
-    background: var(--glass2);
+    background: rgba(255,255,255,.22);
     backdrop-filter: blur(10px);
     box-shadow: 0 18px 44px rgba(0,0,0,.12);
     font-size:15px;
@@ -172,7 +170,6 @@
   }
   .btn:active{ transform: translateY(1px) scale(.99); }
 
-  /* 弹窗 */
   #popup{
     display:none;
     position:fixed; inset:0;
@@ -308,14 +305,17 @@
   const prizes = ["没中奖","没中奖","没中奖","没中奖","没中奖","没中奖","📸 拍立得","🐶 线条小狗","🌹 鲜花","💖 获得所有礼品"];
   const N = prizes.length;
   const STEP = 360 / N;
-  const POINTER_AT = -90; // 指针朝上
-  const WIN_INDEX = 9;    // 必中：获得所有礼品
 
-  // ====== 生成 SVG 轮盘（颜色+白线绝对对齐）=====
+  // ✅ 永远锁定“获得所有礼品”这个扇区（防止你以后改顺序）
+  const WIN_INDEX = prizes.indexOf("💖 获得所有礼品");
+
+  // ✅ 固定微调：偏左用正数，偏右用负数（一般 0.4~1.6）
+  const CORRECTION_DEG = 0.9;
+
+  // ====== 生成 SVG 轮盘（颜色+白线+文字绝对对齐）=====
   const size = 1000;
   const cx = size/2, cy = size/2;
   const rOuter = 470;
-  const rInner = 60;
 
   const colors = [
     "#d1d5db","#e5e7eb","#d1d5db","#e5e7eb","#d1d5db","#e5e7eb",
@@ -348,12 +348,9 @@
   svg.setAttribute("height","100%");
   svg.style.borderRadius = "50%";
 
-  // 扇区组（一起旋转）
   const g = document.createElementNS(svgNS,"g");
-  // 从 -90deg 开始，让第0个扇区顶端对齐
-  g.setAttribute("transform", `rotate(0 ${cx} ${cy})`);
 
-  // 画扇区
+  // 扇区
   for(let i=0;i<N;i++){
     const start = i*STEP;
     const end = (i+1)*STEP;
@@ -363,7 +360,7 @@
     g.appendChild(path);
   }
 
-  // 白色分割线（真正的线，绝不漂）
+  // 白色分割线（真线）
   for(let i=0;i<N;i++){
     const deg = i*STEP;
     const p = polarToXY(rOuter, deg);
@@ -388,7 +385,7 @@
   inner.setAttribute("stroke-width","10");
   g.appendChild(inner);
 
-  // 文字（放在每个扇区中线）
+  // 文字（每个扇区中心线方向）
   for(let i=0;i<N;i++){
     const mid = i*STEP + STEP/2;
     const pos = polarToXY(280, mid);
@@ -401,13 +398,12 @@
     t.setAttribute("font-weight","900");
     t.setAttribute("fill", prizes[i]==="没中奖" ? "#6b7280" : "#111827");
     t.setAttribute("style","filter: drop-shadow(0 6px 10px rgba(0,0,0,.18)); user-select:none;");
-    // 让字正着：反向旋转
     t.setAttribute("transform", `rotate(${mid} ${pos.x} ${pos.y})`);
     t.textContent = prizes[i];
     g.appendChild(t);
   }
 
-  // 中心遮罩（盖掉分割线中间太乱）
+  // 中心盖帽
   const cap = document.createElementNS(svgNS,"circle");
   cap.setAttribute("cx", cx);
   cap.setAttribute("cy", cy);
@@ -420,20 +416,17 @@
   svg.appendChild(g);
   wheelEl.appendChild(svg);
 
-  // ====== 旋转逻辑 ======
+  // ====== 旋转逻辑（✅永远不会“转几次跑到鲜花”）=====
   let spinning = false;
   let currentRotation = 0;
 
-  function computeRotationToLandOn(index){
-    // 目标扇区中心角（以顶部为0）
-    const winCenter = index*STEP + STEP/2;
-    // 我们希望它到指针（顶部），所以旋转 = -winCenter
-    const base = -winCenter;
-    const spins = 9; // 多转几圈更戏剧
-    return spins*360 + base;
+  // ✅ 只返回“对齐角”，不要加圈数，圈数在 startSpin 里统一控制
+  function alignAngleToIndex(index){
+    const winCenter = index*STEP + STEP/2; // 扇区中心角
+    return -winCenter;                     // 把该中心角转到顶部指针
   }
 
-  // ====== BGM 自动播放（如果拦截，点 LOVE 解锁）=====
+  // ====== BGM 自动播放（若被拦截，点 LOVE 解锁）=====
   let audioUnlocked = false;
   async function tryAutoplay(){ try{ await bgm.play(); }catch(e){} }
   document.addEventListener("DOMContentLoaded", tryAutoplay);
@@ -601,7 +594,7 @@
     });
   }
 
-  // ====== 抽奖：LOVE 唯一开始键（每次都能重转）=====
+  // ====== 抽奖：LOVE 唯一开始键（✅每次都能重转、永远锁定同一扇区）=====
   function startSpin(){
     if(spinning) return;
     spinning = true;
@@ -618,11 +611,13 @@
       if(t>=7) clearInterval(timer);
     }, 420);
 
-    const wiggle = (Math.random()*8 - 4);
-    const base = computeRotationToLandOn(WIN_INDEX);
-    currentRotation += base + wiggle;
+    const spins = 9; // 每次固定转 9 圈
+    const align = alignAngleToIndex(WIN_INDEX) + CORRECTION_DEG;
 
-    // ✅ 旋转 SVG 组容器
+    // ✅ 归一化当前角度，消掉累计误差（关键）
+    const now = ((currentRotation % 360) + 360) % 360;
+    currentRotation = currentRotation - now + spins*360 + align;
+
     wheelEl.style.transform = `rotate(${currentRotation}deg)`;
 
     setTimeout(()=>{
@@ -648,3 +643,4 @@
 </script>
 </body>
 </html>
+
